@@ -1,27 +1,18 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-
-
-class Fish:
-    def __init__(self, name, breed, description, age):
-        self.name = name
-        self.species = breed
-        self.description = description
-        self.age = age
-
-fish = [
-    Fish('Bob', 'Ryukin', 'Very shy', 2),
-    Fish('Patrick', 'Comet', 'Kind of fancy', 0),
-    Fish('Squidward', 'Ryukin', 'Very fancy', 6)
-]
+from .models import Fish
 
 
 # Create your views here.
 def home(request):
-    return HttpResponse('Welcome to the Fish Collector')
-    
+    return render(request, 'home.html')
+
 def about(request):
     return render(request, 'about.html')
 
 def fish_index(request):
+    fish = Fish.objects.all()
     return render(request, 'fish/index.html', {'fish': fish})
+
+def fish_detail(request, fish_id):
+    single_fish = Fish.objects.get(id=fish_id)
+    return render(request, 'fish/detail.html', { 'single_fish': single_fish })
