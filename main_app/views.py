@@ -1,20 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Fish
+from django.views.generic import ListView, DetailView
+from .models import Fish, Decor
 from .forms import FeedingForm
 
-class FishCreate(CreateView):
-  model = Fish
-  fields = '__all__'
-
-class FishUpdate(UpdateView):
-  model = Fish
-  # Let's make it impossible to rename a cat :)
-  fields = ['species', 'description', 'age']
-
-class FishDelete(DeleteView):
-  model = Fish
-  success_url = '/fish/'
 
 # Create your views here.
 def home(request):
@@ -29,12 +18,15 @@ def fish_index(request):
 
 def fish_detail(request, fish_id):
   single_fish = Fish.objects.get(id=fish_id)
+  decor_single_fish_doesnt_have = Decor.objects.exclude(id__in=single_fish.decors.all().values_list('id'))
   # instantiate FeedingForm to be rendered in the template
   feeding_form = FeedingForm()
   return render(request, 'fish/detail.html', {
     # pass the cat and feeding_form as context
     'single_fish': single_fish, 
-    'feeding_form': feeding_form
+    'feeding_form': feeding_form,
+    # Add the toys to be displayed
+    'decors': decor_single_fish_doesnt_have
   })
 
 def add_feeding(request, fish_id):
@@ -48,3 +40,46 @@ def add_feeding(request, fish_id):
     new_feeding.fish_id = fish_id
     new_feeding.save()
   return redirect('detail', fish_id=fish_id)
+
+def assoc_decor(request, fish_id, decor_id):
+  # Note that you can pass a decors id instead of the whole object
+  Fish.objects.get(id=fish_id).decors.add(decor_id)
+  return redirect('detail', fish_id=fish_id)
+
+def remove_decor(request, fish_id, decor_id):
+  # Note that you can pass a decors id instead of the whole object
+  Fish.objects.get(id=fish_id).decors.remove(decor_id)
+  return redirect('detail', fish_id=fish_id)
+
+class FishCreate(CreateView):
+  model = Fish
+  fields = ['name', 'species', 'description', 'age']
+  success_url = '/fish/'
+
+class FishUpdate(UpdateView):
+  model = Fish
+  # Let's make it impossible to rename a cat :)
+  fields = ['species', 'description', 'age']
+
+class FishDelete(DeleteView):
+  model = Fish
+  success_url = '/fish/'
+
+class DecorList(ListView):
+  model = Decor
+
+class DecorDetail(DetailView):
+  model = Decor
+
+class DecorCreate(CreateView):
+  model = Decor
+  fields = '__all__'
+  success_url = '/decors/'
+
+class DecorUpdate(UpdateView):
+  model = Decor
+  fields = ['name', 'color']
+
+class DecorDelete(DeleteView):
+  model = Decor
+  success_url = '/decors/'
