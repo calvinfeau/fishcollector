@@ -10,6 +10,9 @@ urlpatterns = [
   path('fish/<int:pk>/update/', views.FishUpdate.as_view(), name='fish_update'),
   path('fish/<int:pk>/delete/', views.FishDelete.as_view(), name='fish_delete'),
   path('fish/<int:fish_id>/add_feeding/', views.add_feeding, name='add_feeding'),
+  path('fish/<int:fish_id>/add_photo/', views.add_photo, name='add_photo'),
+  path('fish/<int:fish_id>/delete_photo/<int:photo_id>', views.delete_photo, name='photo_delete'),
+
   path('fish/<int:fish_id>/assoc_decor/<int:decor_id>/', views.assoc_decor, name='assoc_decor'),
   path('fish/<int:fish_id>/remove_decor/<int:decor_id>/', views.remove_decor, name='remove_decor'),
   path('decors/', views.DecorList.as_view(), name='decors_index'),
