@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import FeedingForm
 import uuid
 import boto3
-from .models import Fish, Decor, Photo
+from .models import Fish, Decor, Photo, Feeding
 
 S3_BASE_URL = 'https://s3-us-west-1.amazonaws.com/'
 BUCKET = 'calvinstorage'
@@ -17,9 +21,10 @@ def about(request):
     return render(request, 'about.html')
 
 def fish_index(request):
-    fish = Fish.objects.all()
+    fish = Fish.objects.filter(user=request.user)
     return render(request, 'fish/index.html', {'fish': fish})
 
+@login_required
 def fish_detail(request, fish_id):
   single_fish = Fish.objects.get(id=fish_id)
   decor_single_fish_doesnt_have = Decor.objects.exclude(id__in=single_fish.decors.all().values_list('id'))
@@ -33,6 +38,7 @@ def fish_detail(request, fish_id):
     'decors': decor_single_fish_doesnt_have
   })
 
+@login_required
 def add_feeding(request, fish_id):
   # create the ModelForm using the data in request.POST
   form = FeedingForm(request.POST)
@@ -45,20 +51,29 @@ def add_feeding(request, fish_id):
     new_feeding.save()
   return redirect('detail', fish_id=fish_id)
 
+@login_required
+def delete_feeding(request, fish_id, feeding_id):
+  Feeding.objects.get(pk=feeding_id).delete()
+  return redirect ('detail', fish_id=fish_id)
+
+@login_required
 def assoc_decor(request, fish_id, decor_id):
   # Note that you can pass a decors id instead of the whole object
   Fish.objects.get(id=fish_id).decors.add(decor_id)
   return redirect('detail', fish_id=fish_id)
 
+@login_required
 def remove_decor(request, fish_id, decor_id):
   # Note that you can pass a decors id instead of the whole object
   Fish.objects.get(id=fish_id).decors.remove(decor_id)
   return redirect('detail', fish_id=fish_id)
 
+@login_required
 def delete_photo(request, fish_id, photo_id):
   Photo.objects.get(pk=photo_id).delete()
   return redirect('detail', fish_id=fish_id)
 
+@login_required
 def add_photo(request, fish_id):
     # photo-file was the "name" attribute on the <input type="file">
     photo_file = request.FILES.get('photo-file', None)
@@ -79,12 +94,41 @@ def add_photo(request, fish_id):
             print('An error occurred uploading file to S3')
     return redirect('detail', fish_id=fish_id)
 
+@login_required
+def signup(request):
+  error_message = ''
+  if request.method == 'POST':
+    # This is how to create a 'user' form object
+    # that includes the data from the browser
+    form = UserCreationForm(request.POST)
+    if form.is_valid():
+      # This will add the user to the database
+      user = form.save()
+      # This is how we log a user in via code
+      login(request, user)
+      return redirect('index')
+    else:
+      error_message = 'Invalid credentials - try again'
+  # A bad POST or a GET request, so render signup.html with an empty form
+  form = UserCreationForm()
+  context = {'form': form, 'error_message': error_message}
+  return render(request, 'registration/signup.html', context)
+
+
+
 class FishCreate(CreateView):
   model = Fish
   fields = ['name', 'species', 'description', 'age']
   success_url = '/fish/'
+  # This method is called when a valid
+  # cat form has being submitted
+  def form_valid(self, form):
+    # Assign the logged in user
+    form.instance.user = self.request.user
+    # Let the CreateView do its job as usual
+    return super().form_valid(form)
 
-class FishUpdate(UpdateView):
+class FishUpdate( UpdateView):
   model = Fish
   # Let's make it impossible to rename a cat :)
   fields = ['species', 'description', 'age']

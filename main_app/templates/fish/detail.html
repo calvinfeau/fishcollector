@@ -55,6 +55,7 @@
           <tr>
             <td>{{feeding.date}}</td>
             <td>{{feeding.get_meal_display}}</td>
+            <td><a href="{% url 'delete_feeding' single_fish.id feeding.id%}">X</a></td>
           </tr>
         {% endfor %}
       </tbody>

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -10,6 +10,8 @@ urlpatterns = [
   path('fish/<int:pk>/update/', views.FishUpdate.as_view(), name='fish_update'),
   path('fish/<int:pk>/delete/', views.FishDelete.as_view(), name='fish_delete'),
   path('fish/<int:fish_id>/add_feeding/', views.add_feeding, name='add_feeding'),
+  path('fish/<int:fish_id>/delete_feeding/<int:feeding_id>', views.delete_feeding, name='delete_feeding'),
+
   path('fish/<int:fish_id>/add_photo/', views.add_photo, name='add_photo'),
   path('fish/<int:fish_id>/delete_photo/<int:photo_id>', views.delete_photo, name='photo_delete'),
 
@@ -20,5 +22,7 @@ urlpatterns = [
   path('decors/create/', views.DecorCreate.as_view(), name='decors_create'),
   path('decors/<int:pk>/update/', views.DecorUpdate.as_view(), name='decors_update'),
   path('decors/<int:pk>/delete/', views.DecorDelete.as_view(), name='decors_delete'),
+  path('accounts/', include('django.contrib.auth.urls')),
+  path('accounts/signup', views.signup, name='signup'),
 ]
 
