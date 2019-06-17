@@ -22,7 +22,7 @@ def about(request):
 
 def fish_index(request):
     fish = Fish.objects.filter(user=request.user)
-    return render(request, 'fish/index.html', {'fish': fish})
+    return render(request, 'home.html', {'fish': fish})
 
 @login_required
 def fish_detail(request, fish_id):
