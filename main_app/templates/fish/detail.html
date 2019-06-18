@@ -75,7 +75,7 @@
         <div class="card">
           <div class="card-content">
             <span class="card-title">
-              A <span style="color: {{ decor.color }}">{{ decor.color }}</span> {{ decor.name }}
+              A {{ decor.name }}
             </span>
           </div>
           <div class="card-action">
@@ -87,10 +87,9 @@
         </div>
       {% endfor %}
     {% else %}
-      <h5>No Decorations :(</h5>
+      <h5>No Decorations</h5>
     {% endif %}
     </div>
-  <!-- Available toys will come after this line -->
     <div class="col s6">
     <h4>Available Decorations</h4>
     {% if decors.count %}
@@ -98,7 +97,7 @@
         <div class="card">
           <div class="card-content">
             <span class="card-title">
-              A <span style="color: {{ decor.color }}">{{ decor.color }}</span> {{ decor.name }}
+              A {{ decor.name }}
             </span>
           </div>
           <div class="card-action">
@@ -114,7 +113,6 @@
     {% endif %}
   </div>
 </div>
-<!-- JS to create a date picker and init the meal dropdown -->
 <script>
   var dateEl = document.getElementById('id_date');
   M.Datepicker.init(dateEl, {
@@ -123,7 +121,7 @@
     setDefaultDate: true,
     autoClose: true
   });
-    // add additional JS to initialize select below
+
   var selectEl = document.getElementById('id_meal');
   M.FormSelect.init(selectEl);
 </script>

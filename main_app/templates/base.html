@@ -15,20 +15,20 @@
     <header class="navbar-fixed">
         <nav>
             <div class="nav-wrapper">
-                <ul>
+                <ul class="left">
                     {% if user.is_authenticated %}
-                    <li id="fish"><a href="{% url 'index' %}"><img src="{% static 'images/mini_fish_logo.png' %}" alt="Fish"></a></li>
-                    <li><a href="{% url 'fish_create' %}"> + Fish</a></li>
+                        <li class="logo"><a href="{% url 'index' %}"><img src="{% static 'images/mini_fish_logo.png' %}" alt="Fish"></a></li>
+                        <li><a href="{% url 'fish_create' %}"> + Fish</a></li>
                     {% endif %}
                 </ul>
                 <ul class="right">
                     {% if user.is_authenticated %}
-                    <li><a href="{% url 'decors_index' %}">View All Decorations</a></li>
-                    <li><a href="{% url 'decors_create' %}"> + Decoration</a></li>
-                    <li><a href="{% url 'logout' %}">Log Out</a></li>
+                        <li class="logo"><a href="{% url 'decors_index' %}"><img src="{% static 'images/aquarium_logo.png' %}" alt="Decor"></a></li>
+                        <li><a href="{% url 'decors_create' %}"> + Decoration</a></li>
+                        <li><a href="{% url 'logout' %}">Log Out</a></li>
                     {% else %}
-                    <li><a href="{% url 'signup' %}">Sign Up</a></li>
-                    <li><a href="{% url 'login' %}">Log In</a></li>
+                        <li><a href="{% url 'signup' %}">Sign Up</a></li>
+                        <li><a href="{% url 'login' %}">Log In</a></li>
                     {% endif %}
                 </ul>
             </div>
